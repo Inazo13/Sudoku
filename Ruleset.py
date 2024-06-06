@@ -6,9 +6,8 @@ import math
 #grid est la grille de sudoku
 #x est le nombre que on souhaite placer dans la case
 
-pool=["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0"]
-
-def limitPool(pool, grid):
+def limitPool(grid):
+    pool=["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0"]
     possPool=[]
     for loop in range (len(grid)):
         possPool+=[(pool[loop])]
