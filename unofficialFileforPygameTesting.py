@@ -226,6 +226,8 @@ while running:
         grilleEnCours=True
         if size==3:
             my_font = pygame.font.SysFont('microsofthimalaya', 80)
+        elif size==2:
+            my_font = pygame.font.SysFont('microsofthimalaya', 90)
         elif size==4:
             my_font = pygame.font.SysFont('microsofthimalaya', 60)
         elif size==6:
@@ -299,9 +301,22 @@ while running:
     pygame.draw.rect(screen, (198,36,3),hardplus_diff)
     pygame.draw.rect(screen, (0,0,1),demon_diff)
 
+    #esthétique bouton difficulté
+    if Diff==1:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(740, 150, 25, 25), 3)
+    elif Diff==2:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(770, 150, 25, 25), 3)
+    elif Diff==3:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(800, 150, 25, 25), 3)
+    elif Diff==4:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(830, 150, 25, 25), 3)
+    elif Diff==5:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(860, 150, 25, 25), 3)
+
     # flip() the display to put your work on screen
     pygame.display.flip()
 
     clock.tick(60)
 
 pygame.quit()
+
