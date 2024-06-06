@@ -1,11 +1,3 @@
-               _       _           
-               | |     | |          
-  ___ _   _  _ | | ___ | |  _ _   _   
- /___) | | |/ || |/ _ \| | / ) | | |  
-|___ | |_| ( (_| | |_| | |< (| |_| |  
-(___/ \____|\____|\___/|_| \_)\____|  
-                                    
-
 Générer une grille:
 Entrez une taille pour la grille entre 2 et 6 pour générer une grille. La difficulté par défaut est facile mais il est possible de le modifier.
 
