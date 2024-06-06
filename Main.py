@@ -1,40 +1,42 @@
 import pygame
 import copy
 
+import fileManager
+import FillGrid
+import removeNum
+import solveGrid
 # pygame setup
 pygame.init()
+pygame.mixer.music.load("acoustic_music.mp3")
+pygame.mixer.music.play(-1)
 screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
 running = True
 
-#grid setup
-size=3
 grilleEnCours=False
+generate = False
+defaultDiff=1
+Diff=0
 
 #partie def et grille
 x=y=50
 
 #test text surface
-pygame.font.init() 
+pygame.font.init()
 text_font = pygame.font.SysFont('microsofthimalaya', 40)
 
-#test de grille
-if size==3:
-    grid=[[7, ".", 5, 2, ".", 3, 4, ".", 6], [1, ".", 9, 4, 5, 6, ".", 8, 3],[4, 6, ".", 9, 7, ".", 2, 5, "."],[2, 1, ".", 3, 6, 9, 5, ".", 4],[5, 9, ".", 7, 2, ".", 6, ".", 8],[".", ".", ".", 5, ".", 4, ".", 1, "."],[6, ".", ".", ".", 9, 5, ".", 4, "."],[".", 5, ".", ".", 4, ".", ".", 2, 9],[9, ".", 7, ".", ".", 2, ".", 6, 5]]
-elif size==4:
-    grid=[[1, 3, 'f', 'e', 'c', 5, 9, 'g', 6, 4, 8, 'a', 'b', 7, 2, 'd'],[5, 4, 'g', 'b', 1, 8, 6, 'a', 9, 2, 7, 'd', 3, 'f', 'c', 'e'],[9, 'c', 2, 7, 'd', 3, 'f', 'b', 5, 'e', 1, 'g', 6, 4, 8, 'a'],['d', 6, 8, 'a', 2, 'e', 4, 7, 3, 'b', 'c', 'f', 'g', 1, 5, 9],[3, 9, 'a', 1, 'g', 7, 'c', 'd', 8, 5, 4, 2, 'e', 'b', 6, 'f'],['g', 'e', 4, 'f', 'b', 1, 'a', 2, 7, 'd', 9, 6, 8, 'c', 3, 5],[2, 7, 'd', 'c', 'f', 6, 5, 8, 'e', 'g', 3, 'b', 9, 'a', 1, 4],[8, 'b', 6, 5, 4, 9, 3, 'e', 1, 'f', 'a', 'c', 'd', 2, 'g', 7],[7, 5, 9, 3, 6, 'a', 'e', 'f', 4, 1, 'b', 8, 2, 'g', 'd', 'c'],['a', 'f', 'b', 2, 8, 'd', 1, 4, 'c', 3, 'g', 9, 5, 'e', 7, 6],['c', 8, 1, 'g', 9, 2, 7, 5, 'f', 6, 'd', 'e', 'a', 3, 4, 'b'],[6, 'd', 'e', 4, 3, 'b', 'g', 'c', 'a', 7, 2, 5, 'f', 8, 9, 1],['e', 1, 'c', 6, 'a', 4, 'b', 9, 2, 8, 5, 3, 7, 'd', 'f', 'g'],[4, 2, 3, 9, 5, 'f', 'd', 1, 'g', 'a', 'e', 7, 'c', 6, 'b', 8],['b', 'g', 7, 8, 'e', 'c', 2, 6, 'd', 9, 'f', 1, 4, 5, 'a', 3],['f', 'a', 5, 'd', 7, 'g', 8, 3, 'b', 'c', 6, 4, 1, 9, 'e', 2]]
-elif size==5:
-    grid=[[2, 4, 'c', 8, 'n', 'b', 1, 'o', 'a', 'k', 5, 6, 'l', 'g', 'd', 9, 7, 'm', 'i', 'f', 'p', 'h', 3, 'e', 'j'], ['a', 3, 6, 'd', 'h', 'e', 8, 7, 'l', 9, 4, 'c', 1, 'k', 'p', 'n', 'o', 'g', 'j', 'b', 'f', 'm', 'i', 5, 2], ['b', 'g', 'f', 'i', 'k', 'm', 2, 4, 'h', 'n', 'j', 8, 'a', 'e', 3, 'd', 'p', 5, 1, 'l', 'c', 9, 6, 7, 'o'], ['m', 5, 1, 7, 9, 'g', 'c', 'p', 'd', 'j', 'f', 'o', 'i', 'h', 'n', 3, 'k', 'e', 2, 6, 8, 'l', 4, 'b', 'a'], ['j', 'l', 'p', 'o', 'e', 3, 6, 5, 'i', 'f', 9, 2, 'b', 'm', 7, 'h', 4, 'a', 'c', 8, 'k', 'n', 'g', 1, 'd'], [1, 'j', 'o', 5, 2, 'h', 'n', 'm', 'a', 'e', 'p', 4, 8, 'k', 7, 'c', 6, 9, 'b', 3, 'i', 'l', 'f', 'g', 'd'], ['f', 'p', 'm', 7, 'g', 'k', 'b', 'd', 3, 4, 5, 'h', 1, 'a', 'l', 8, 'j', 'i', 'e', 'o', 6, 9, 'n', 'c', 2], ['i', 'b', 4, 'a', 'c', 9, 6, 8, 'f', 'o', 'e', 'g', 'j', 'd', 'n', 'h', 2, 'l', 5, 1, 3, 'k', 'm', 'p', 7], [8, 3, 9, 6, 'l', 'p', 1, 'j', 5, 'c', 'o', 'f', 'm', 'i', 2, 'g', 'k', 7, 'n', 'd', 'b', 'e', 4, 'a', 'h'], ['n', 'e', 'h', 'k', 'd', 'g', 'l', 7, 'i', 2, 6, 'b', 'c', 9, 3, 'f', 'm', 'a', 'p', 4, 'o', 'j', 1, 8, 5], ['m', 'b', 'c', 'k', 3, 'i', 'p', 'o', 9, 'n', 2, 5, 'g', 4, 8, 1, 'j', 'a', 'd', 'f', 'e', 6, 'l', 7, 'h'], [7, 6, 'f', 'd', 'p', 'e', 5, 'j', 1, 8, 'l', 'a', 3, 'o', 'c', 4, 'g', 'b', 'k', 'h', 'i', 9, 'n', 2, 'm'], ['g', 1, 'a', 9, 'j', 'b', 'h', 'k', 6, 'c', 'n', 7, 'p', 'f', 'e', 'o', 'l', 'm', 2, 'i', 8, 5, 3, 'd', 4], ['h', 'n', 4, 'i', 5, 2, 'g', 'd', 7, 'l', 1, 'm', 'j', 'b', 9, 'p', 6, 3, 'e', 8, 'f', 'k', 'o', 'c', 'a'], ['e', 'l', 8, 2, 'o', 3, 4, 'f', 'a', 'm', 'd', 'k', 'i', 6, 'h', 'n', 5, 9, 7, 'c', 1, 'g', 'b', 'j', 'p'], [8, 'd', 'h', 'e', 9, 'i', 1, 2, 'a', 4, 'l', 'm', 'g', 'o', 3, 6, 'c', 'k', 5, 'p', 7, 'b', 'n', 'j', 'f'], ['k', 1, 'j', 'm', 'g', 'c', 3, 5, 'f', 8, 'a', 'd', 7, 2, 4, 'e', 'n', 'i', 'b', 'h', 9, 6, 'l', 'p', 'o'], [3, 'p', 4, 'a', 6, 'j', 'm', 'o', 'n', 7, 'f', 'c', 5, 'h', 'b', 'g', 2, 'l', 8, 9, 1, 'k', 'e', 'i', 'd'], [7, 'i', 'f', 'b', 5, 'p', 'd', 'g', 'k', 'l', 9, 'e', 6, 'j', 'n', 4, 'm', 1, 'o', 3, 'a', 'c', 2, 'h', 8], ['o', 'n', 'l', 2, 'c', 9, 'e', 'h', 6, 'b', 1, 8, 'k', 'i', 'p', 7, 'a', 'f', 'j', 'd', 'm', 3, 'g', 5, 4], ['h', 7, 'f', 'e', 'i', 'l', 8, 'o', 'k', 'm', 'a', 3, 4, 2, 'd', 1, 'c', 'p', 'j', 'g', 'n', 'b', 5, 6, 9], [2, 6, 'j', 'd', 'g', 'a', 'h', 9, 'e', 'p', 'l', 'n', 'o', 'b', 8, 'f', 7, 'k', 5, 'i', 4, 1, 3, 'm', 'c'], [1, 9, 'm', 'l', 'b', 'g', 4, 5, 2, 6, 'f', 'e', 7, 'c', 'j', 3, 'o', 'n', 8, 'a', 'd', 'i', 'p', 'k', 'h'], ['p', 'n', 'c', 5, 'k', 'd', 'f', 3, 'j', 'b', 'h', 6, 1, 'm', 'i', 'l', 9, 'e', 4, 2, 8, 7, 'o', 'g', 'a'], [8, 'o', 'a', 4, 3, 7, 'n', 'i', 'c', 1, 5, 9, 'k', 'g', 'p', 'd', 'm', 'b', 'h', 6, 'f', 2, 'e', 'j', 'l']]
-else:
-    grid=[]
-fillerGrid=copy.deepcopy(grid)
+#test image affichage
+img=pygame.image.load('save.png')
+small_img = pygame.transform.scale(img, (30, 30))
+save_hitobx = pygame.Rect(740, 10, 25, 25) 
+
 
 #input cell test
 base_font = pygame.font.Font(None, 25) 
 user_text = '' 
-input_rect = pygame.Rect(740, 120, 30, 30) 
-color_active = pygame.Color('lightskyblue3') 
-color_passive = pygame.Color('chartreuse4') 
+input_rect = pygame.Rect(740, 200, 30, 30) 
+color_active = (pygame.Color('lightskyblue3') )
+color_passive = (135, 195, 143) 
 color = color_passive 
 active = False
 
@@ -44,8 +46,22 @@ input_cell=pygame.Rect(740, 70, 30,30)
 size_color=color_passive
 size_active=False
 
+#troisieme cellule charger fichiers
+grilleACharger=''
+celluleACharger=pygame.Rect(740, 750, 30,30)
+load_color=color_passive
+grilleChargee=False
+
+#boutons difficulté
+ez_diff = pygame.Rect(740, 150, 25, 25) 
+mid_diff = pygame.Rect(770, 150, 25, 25) 
+hard_diff = pygame.Rect(800, 150, 25, 25) 
+hardplus_diff = pygame.Rect(830, 150, 25, 25) 
+demon_diff = pygame.Rect(860, 150, 25, 25) 
+
+#dessine une grille et affiche les cases pré-remplies
 def drawEmptyGrid(size, grid):
-    screen.fill(pygame.Color("darkslategray3"))
+    screen.fill((28, 110, 140))
     ecart=720/(size*size)
     for loop in range (size*size):
         i=0
@@ -63,12 +79,12 @@ def drawEmptyGrid(size, grid):
                 i+=1
                 j+=1
                 #compteur+=1
-    pygame.draw.rect(screen, pygame.Color("chartreuse3"), pygame.Rect(15, 15, 720, 720), 5)
+    pygame.draw.rect(screen, (35,25,70), pygame.Rect(15, 15, 720, 720), 5)
     i = 1
     while (i*ecart) < 720:
         line_width = 2 if i % size > 0 else 4
-        pygame.draw.line(screen, pygame.Color("chartreuse3"), pygame.Vector2((i*ecart) + 15, 15), pygame.Vector2((i * ecart) + 15, 730), line_width)
-        pygame.draw.line(screen, pygame.Color("chartreuse3"), pygame.Vector2(15, (i * ecart) + 15), pygame.Vector2(730, (i * ecart) + 15), line_width)
+        pygame.draw.line(screen, (35,25,70), pygame.Vector2((i*ecart) + 15, 15), pygame.Vector2((i * ecart) + 15, 730), line_width)
+        pygame.draw.line(screen, (35,25,70), pygame.Vector2(15, (i * ecart) + 15), pygame.Vector2(730, (i * ecart) + 15), line_width)
         i += 1
 
 #deuxieme def prends la case choisie par l'utilisateur
@@ -106,7 +122,7 @@ def drawGrid(grid, size):
                     screen.blit(text_surface, ((i*ecart)+(ecart/2),(j*ecart)+(ecart/3)))
 
 #test si la case choisie est valide et peut être remplie
-#ATTENTION NE PRENDS PAS EN COMPTE LES VALEURS POSSIBLES DONC ON PEUT METTRE DES ? EN INPUT
+#ATTENTION NE PRENDS PAS EN COMPTE LES VALEURS POSSIBLES DONC ON PEUT METTRE DES ?? EN INPUT
 def testValid(ligne, column, grid, fillerGrid):
     if user_text!="":
         if grid[column][ligne]==".":
@@ -114,7 +130,7 @@ def testValid(ligne, column, grid, fillerGrid):
             fillerGrid[column][ligne]=user_text
             print(grid)
 
-#Code pygame
+
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -136,6 +152,33 @@ while running:
                 size_active=True
             else:
                 size_active=False
+
+            if celluleACharger.collidepoint(event.pos):
+                grilleChargee=True
+            else:
+                grilleChargee=False
+            
+            if save_hitobx.collidepoint(event.pos):
+                if ((fileManager.userpath!='\.')&(grilleEnCours==True)):
+                    fileManager.saveGrid(grid, fillerGrid, fileManager.userpath)
+                else:
+                    print("pas de grille en cours")
+            
+            if ez_diff.collidepoint(event.pos):
+                Diff=1
+                generate=False
+            if mid_diff.collidepoint(event.pos):
+                Diff=2
+                generate=False
+            if hard_diff.collidepoint(event.pos):
+                Diff=3
+                generate=False
+            if hardplus_diff.collidepoint(event.pos):
+                Diff=4
+                generate=False
+            if demon_diff.collidepoint(event.pos):
+                Diff=5
+                generate=False
   
         if event.type == pygame.KEYDOWN: 
             if event.key == pygame.K_BACKSPACE: 
@@ -143,6 +186,8 @@ while running:
                     user_text = user_text[:-1] 
                 elif size_active==True:
                     size_test = size_test[:-1] 
+                elif grilleChargee==True:
+                    grilleACharger = grilleACharger[:-1]
             else: 
                 if active==True:
                     if len(user_text)>=1:
@@ -156,9 +201,19 @@ while running:
                             print(size_test)
                         else:
                             size_test+=event.unicode
+                            generate=False
+                elif grilleChargee==True:
+                    grilleACharger+=event.unicode
 
-    
-    screen.fill((131, 166, 200)) 
+    screen.fill((28, 110, 140)) 
+
+    #Charger une partie antérieure (PROBLEME AVEC LES TAILLES DE GRILLE)
+    #a noter que si le fichier n'est pas au bon formatage de grille il y aura des problèmes et que actuellement ça bloque le progrès antérieur
+    if grilleChargee==True:
+        if fileManager.testExistence(fileManager.userpath, grilleACharger)==True:
+            filepath=fileManager.userpath+grilleACharger+".json"
+            lines=fileManager.loadGrid(filepath)
+            grid, fillerGrid, size= fileManager.getGrids(lines)
 
     #changement de la taille de grille
     if (size_test>='2') & (size_test<='6'):
@@ -166,7 +221,7 @@ while running:
     elif (size_test=='') | (size_test=='0'):
         size=1
 
-
+    #génération/ mise en place de grille
     if (size>=2) & (size<=6):
         grilleEnCours=True
         if size==3:
@@ -179,6 +234,13 @@ while running:
             my_font = pygame.font.SysFont('microsofthimalaya', 40)
         else:
             my_font = pygame.font.SysFont('microsofthimalaya', 40)
+        if Diff==0:
+            Diff=defaultDiff
+        if generate==False:
+            grid = FillGrid.generateGrid(size)
+            removeNum.removeNum(grid, Diff)
+            generate = True
+            fillerGrid = copy.deepcopy(grid)
         drawEmptyGrid(size, grid)
         drawGrid(fillerGrid, size)
     else:
@@ -203,14 +265,39 @@ while running:
     text_surface_size = base_font.render(size_test, True, (255, 255, 255))
     screen.blit(text_surface_size, (input_cell.x+5, input_cell.y+5)) 
     input_cell.w = max(5, text_surface_size.get_width()+10) 
+
+    #zone de saisie numéro 3
+    if grilleChargee:
+        load_color=color_active
+    else:
+        load_color=color_passive
+    pygame.draw.rect(screen, load_color, celluleACharger)
+    text_surface_load=base_font.render(grilleACharger, True, (255, 255, 255))
+    screen.blit(text_surface_load, (celluleACharger.x+5, celluleACharger.y+5))
+    celluleACharger.w=max(5, text_surface_load.get_width()+10)
     
     #text zone de saisie
-    text_surface = text_font.render('Zone de saisie', False, (0, 0, 0))
-    screen.blit(text_surface, (760,120))
+    text_surface = text_font.render('Zone de saisie', False, (255, 255, 255))
+    screen.blit(text_surface, (760,200))
     #texte taille de la grille
     text_surface2 = text_font.render('Taille de la grille', False, (0, 0, 0))
     screen.blit(text_surface2, (760,70))
+    #texte charger partie
+    text_surface3 = text_font.render('Charger une partie', False, (0, 0, 0))
+    screen.blit(text_surface3, (740,715))
+    #texte difficulté
+    text_surface4 = text_font.render('Difficulté', False, (0, 0, 0))
+    screen.blit(text_surface4, (740,120))
 
+    #test image
+    screen.blit(small_img,(740,10))
+    
+    #boutons de difficulté
+    pygame.draw.rect(screen, (57,211,126),ez_diff)
+    pygame.draw.rect(screen, (231,239,76),mid_diff)
+    pygame.draw.rect(screen, (252,176,35),hard_diff)
+    pygame.draw.rect(screen, (198,36,3),hardplus_diff)
+    pygame.draw.rect(screen, (0,0,1),demon_diff)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
