@@ -7,7 +7,7 @@ import removeNum
 import solveGrid
 # pygame setup
 pygame.init()
-pygame.mixer.music.load("brazilian-bossa-nova-jazz-acoustic-guitar-podcast-music-201763.mp3")
+pygame.mixer.music.load("acoustic_music.mp3")
 pygame.mixer.music.play(-1)
 screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
