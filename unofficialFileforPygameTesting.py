@@ -1,6 +1,7 @@
 import pygame
 import copy
 
+import Ruleset
 import fileManager
 import FillGrid
 import removeNum
@@ -13,6 +14,8 @@ screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
 running = True
 
+victory=False
+lose=False
 grilleEnCours=False
 generate = False
 defaultDiff=1
@@ -37,6 +40,11 @@ save_hitobx = pygame.Rect(740, 10, 25, 25)
 buttonSolve=pygame.image.load("solve.png")
 solve_small = pygame.transform.scale(buttonSolve, (70, 70))
 save2_hitobx = pygame.Rect(770, 5, 30, 70) 
+
+#victoire/défaite
+death=pygame.image.load("YOU_DIED.png")
+Victory=pygame.image.load("VICTORY_ACHIEVED.png")
+Victory_resize=pygame.transform.scale(Victory, (1280, 720))
 
 
 #input cell test
@@ -265,6 +273,17 @@ while running:
         drawGrid(grid)
         solve==False
 
+    if Ruleset.emptyNum(fillerGrid)==False:
+        SolvedGrid=copy.deepcopy(grid)
+        solveGrid(SolvedGrid, removeNum.possPool)
+        if (SolvedGrid==fillerGrid):
+            victory=True
+        else:
+            lose=True
+    else:
+        victory=False
+        lose=False
+
     #zone de saisie numéro 1
     if active: 
         color = color_active 
@@ -311,6 +330,10 @@ while running:
     #test image
     screen.blit(small_img,(740,10))
     screen.blit(solve_small,(780, -8))
+    if lose==True:
+        screen.blit(death, (-450,-150))
+    if victory==True:
+        screen.blit(Victory_resize, (-100, 0))
     
     #boutons de difficulté
     pygame.draw.rect(screen, (57,211,126),ez_diff)
@@ -337,3 +360,4 @@ while running:
     clock.tick(60)
 
 pygame.quit()
+
