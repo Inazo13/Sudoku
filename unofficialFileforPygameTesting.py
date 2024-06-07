@@ -90,21 +90,20 @@ def drawEmptyGrid(size, grid):
 #deuxieme def prends la case choisie par l'utilisateur
 def inputUser(size):
     x,y=pygame.mouse.get_pos()
-    ligne=0
-    column=0
-    ecart=720/(size*size)
-    if ((x>=15)& (x<=735)):
+    if ((x>=15)& (x<=735)) & ((y>15)&(y<=735)):
+        ligne=0
+        column=0
+        ecart=720/(size*size)
         #print(x)
         while(x>(((ligne+1)*ecart)+15)):
             ligne+=1
-    if ((y>15)&(y<=735)):
         #print y
         while(y>(((column+1)*ecart)+15)):
             column+=1
-    if ((y<=735)& (x<=735)):
         #pygame.draw.rect(screen, "violet",pygame.Rect((ligne*ecart)+15,(column*ecart)+15, ecart,ecart))
-        print("ligne: ", ligne, "colonne", column)
-    return ligne,column
+        print("ligne: ", ligne, "colonne", column)   
+        return ligne,column
+    return None, None
 
 #dessine la grille
 def drawGrid(grid, size):
@@ -124,7 +123,7 @@ def drawGrid(grid, size):
 #test si la case choisie est valide et peut être remplie
 #ATTENTION NE PRENDS PAS EN COMPTE LES VALEURS POSSIBLES DONC ON PEUT METTRE DES ?? EN INPUT
 def testValid(ligne, column, grid, fillerGrid):
-    if user_text!="":
+    if (user_text!="") & (ligne!=None) & (column!=None):
         if grid[column][ligne]==".":
             print("valid")
             fillerGrid[column][ligne]=user_text
