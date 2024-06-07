@@ -3,7 +3,7 @@ from solveGrid import *
 import random
 import copy
 
-def remove(grid, possPool, diff):
+def removeNum(grid, diff=1):
     originalGrid = copy.deepcopy(grid)
     if diff==1: squares=int(len(grid)**2//(10/4))
     elif diff==2: squares=int(len(grid)**2//(10/5))
@@ -24,16 +24,10 @@ def remove(grid, possPool, diff):
         squares -= 1
         #
         copyGrid = copy.deepcopy(grid)
-        solveGrid(copyGrid, possPool)
+        solveGrid(copyGrid)
         if copyGrid != originalGrid:
             squares += 1
-            grid[line][column] = removeSquare
-
-def removeNum(grid, diff=1):
-    possPool = limitPool(grid)
-    remove(grid, possPool, diff)
-
-        
+            grid[line][column] = removeSquare       
 
 if __name__ == "__main__":
 

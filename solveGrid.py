@@ -3,7 +3,7 @@ from Ruleset import *
 import random
 import copy
 
-def solveGrid(grid, possPool):
+def solve(grid, possPool):
     for i in range(len(grid)*len(grid)):
         line = i//len(grid)
         column = i%len(grid)
@@ -14,11 +14,15 @@ def solveGrid(grid, possPool):
                     if not emptyNum(grid):
                         return True
                     else:
-                        if solveGrid(grid, possPool):
+                        if solve(grid, possPool):
                             return True
             break
     grid[line][column]='.'
     return False
+
+def solveGrid(grid):
+    possPool = limitPool(grid)
+    solve(grid, possPool)
     
 
 if __name__ == "__main__":
@@ -40,8 +44,7 @@ if __name__ == "__main__":
 ['e', 'd', '.', '.', '.', '.', '.', '4', '.', '.', '6', 'f', '.', '8', '9', '.']]
 
 
-    possPool = limitPool(grid)
-    solveGrid(grid, possPool)
+    
 
     for line in grid:
         print(line)

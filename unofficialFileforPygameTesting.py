@@ -269,20 +269,21 @@ while running:
 
     #Résoud la grille si demandé
     if solve==True: 
-        solveGrid(grid, removeNum.possPool)
+        solveGrid(grid)
         drawGrid(grid)
         solve==False
 
-    if Ruleset.emptyNum(fillerGrid)==False:
-        SolvedGrid=copy.deepcopy(grid)
-        solveGrid(SolvedGrid, removeNum.possPool)
-        if (SolvedGrid==fillerGrid):
-            victory=True
+    if grilleEnCours==True:
+        if Ruleset.emptyNum(fillerGrid)==False:
+            SolvedGrid=copy.deepcopy(grid)
+            solveGrid.solveGrid(SolvedGrid)
+            if (SolvedGrid==fillerGrid):
+                victory=True
+            else:
+                lose=True
         else:
-            lose=True
-    else:
-        victory=False
-        lose=False
+            victory=False
+            lose=False
 
     #zone de saisie numéro 1
     if active: 
