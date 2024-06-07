@@ -18,6 +18,9 @@ generate = False
 defaultDiff=1
 Diff=0
 
+#Si utilisateur souhaite résoudre la grille
+solve=False
+
 #partie def et grille
 x=y=50
 
@@ -29,6 +32,11 @@ text_font = pygame.font.SysFont('microsofthimalaya', 40)
 img=pygame.image.load('save.png')
 small_img = pygame.transform.scale(img, (30, 30))
 save_hitobx = pygame.Rect(740, 10, 25, 25) 
+
+#affichage du bouton solve
+buttonSolve=pygame.image.load("solve.png")
+solve_small = pygame.transform.scale(buttonSolve, (70, 70))
+save2_hitobx = pygame.Rect(770, 5, 30, 70) 
 
 
 #input cell test
@@ -130,6 +138,7 @@ def testValid(ligne, column, grid, fillerGrid):
             print(grid)
 
 
+
 while running:
     # poll for events
     # pygame.QUIT event means the user clicked X to close your window
@@ -159,10 +168,13 @@ while running:
             
             if save_hitobx.collidepoint(event.pos):
                 if ((fileManager.userpath!='\.')&(grilleEnCours==True)):
-                    fileManager.saveGrid(grid, fillerGrid)
+                    fileManager.saveGrid(grid, fillerGrid, fileManager.userpath)
                 else:
                     print("pas de grille en cours")
             
+            if save2_hitobx.collidepoint(event.pos):
+                solve=True
+
             if ez_diff.collidepoint(event.pos):
                 Diff=1
                 generate=False
@@ -209,7 +221,7 @@ while running:
     #Charger une partie antérieure (PROBLEME AVEC LES TAILLES DE GRILLE)
     #a noter que si le fichier n'est pas au bon formatage de grille il y aura des problèmes et que actuellement ça bloque le progrès antérieur
     if grilleChargee==True:
-        if fileManager.testExistence(grilleACharger)==True:
+        if fileManager.testExistence(fileManager.userpath, grilleACharger)==True:
             filepath=fileManager.userpath+grilleACharger+".json"
             lines=fileManager.loadGrid(filepath)
             grid, fillerGrid, size= fileManager.getGrids(lines)
@@ -246,6 +258,12 @@ while running:
         drawGrid(fillerGrid, size)
     else:
         grilleEnCours=False
+
+    #Résoud la grille si demandé
+    if solve==True: 
+        solveGrid(grid, removeNum.possPool)
+        drawGrid(grid)
+        solve==False
 
     #zone de saisie numéro 1
     if active: 
@@ -292,6 +310,7 @@ while running:
 
     #test image
     screen.blit(small_img,(740,10))
+    screen.blit(solve_small,(780, -8))
     
     #boutons de difficulté
     pygame.draw.rect(screen, (57,211,126),ez_diff)
@@ -318,4 +337,3 @@ while running:
     clock.tick(60)
 
 pygame.quit()
-
