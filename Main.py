@@ -1,6 +1,7 @@
 import pygame
 import copy
 
+import Ruleset
 import fileManager
 import FillGrid
 import removeNum
@@ -13,10 +14,16 @@ screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
 running = True
 
+victory=False
+lose=False
 grilleEnCours=False
 generate = False
 defaultDiff=1
 Diff=0
+triche=False
+
+#Si utilisateur souhaite résoudre la grille
+solve=False
 
 #partie def et grille
 x=y=50
@@ -29,6 +36,16 @@ text_font = pygame.font.SysFont('microsofthimalaya', 40)
 img=pygame.image.load('save.png')
 small_img = pygame.transform.scale(img, (30, 30))
 save_hitobx = pygame.Rect(740, 10, 25, 25) 
+
+#affichage du bouton solve
+buttonSolve=pygame.image.load("solve.png")
+solve_small = pygame.transform.scale(buttonSolve, (70, 70))
+save2_hitobx = pygame.Rect(770, 5, 75, 40) 
+
+#victoire/défaite
+death=pygame.image.load("YOU_DIED.png")
+Victory=pygame.image.load("VICTORY_ACHIEVED.png")
+Victory_resize=pygame.transform.scale(Victory, (1280, 720))
 
 
 #input cell test
@@ -90,21 +107,20 @@ def drawEmptyGrid(size, grid):
 #deuxieme def prends la case choisie par l'utilisateur
 def inputUser(size):
     x,y=pygame.mouse.get_pos()
-    ligne=0
-    column=0
-    ecart=720/(size*size)
-    if ((x>=15)& (x<=735)):
+    if ((x>=15)& (x<=735)) & ((y>15)&(y<=735)):
+        ligne=0
+        column=0
+        ecart=720/(size*size)
         #print(x)
         while(x>(((ligne+1)*ecart)+15)):
             ligne+=1
-    if ((y>15)&(y<=735)):
         #print y
         while(y>(((column+1)*ecart)+15)):
             column+=1
-    if ((y<=735)& (x<=735)):
         #pygame.draw.rect(screen, "violet",pygame.Rect((ligne*ecart)+15,(column*ecart)+15, ecart,ecart))
-        print("ligne: ", ligne, "colonne", column)
-    return ligne,column
+        print("ligne: ", ligne, "colonne", column)   
+        return ligne,column
+    return None, None
 
 #dessine la grille
 def drawGrid(grid, size):
@@ -124,11 +140,12 @@ def drawGrid(grid, size):
 #test si la case choisie est valide et peut être remplie
 #ATTENTION NE PRENDS PAS EN COMPTE LES VALEURS POSSIBLES DONC ON PEUT METTRE DES ?? EN INPUT
 def testValid(ligne, column, grid, fillerGrid):
-    if user_text!="":
+    if (user_text!="") & (ligne!=None) & (column!=None):
         if grid[column][ligne]==".":
             print("valid")
             fillerGrid[column][ligne]=user_text
             print(grid)
+
 
 
 while running:
@@ -160,10 +177,15 @@ while running:
             
             if save_hitobx.collidepoint(event.pos):
                 if ((fileManager.userpath!='\.')&(grilleEnCours==True)):
-                    fileManager.saveGrid(grid, fillerGrid, fileManager.userpath)
+                    fileManager.saveGrid(grid, fillerGrid)
                 else:
                     print("pas de grille en cours")
             
+            if save2_hitobx.collidepoint(event.pos):
+                print("hit")
+                solve=True
+                triche=True
+
             if ez_diff.collidepoint(event.pos):
                 Diff=1
                 generate=False
@@ -226,6 +248,8 @@ while running:
         grilleEnCours=True
         if size==3:
             my_font = pygame.font.SysFont('microsofthimalaya', 80)
+        elif size==2:
+            my_font = pygame.font.SysFont('microsofthimalaya', 90)
         elif size==4:
             my_font = pygame.font.SysFont('microsofthimalaya', 60)
         elif size==6:
@@ -237,7 +261,10 @@ while running:
         if Diff==0:
             Diff=defaultDiff
         if generate==False:
-            grid = FillGrid.generateGrid(size)
+            if size==5 or size==6:
+                grid = FillGrid.generateGrid2(size)
+            else:
+                grid = FillGrid.generateGrid(size)
             removeNum.removeNum(grid, Diff)
             generate = True
             fillerGrid = copy.deepcopy(grid)
@@ -245,6 +272,28 @@ while running:
         drawGrid(fillerGrid, size)
     else:
         grilleEnCours=False
+
+    #Résoud la grille si demandé
+    if solve==True: 
+        fillerGrid=grid
+        solveGrid.solveGrid(grid)
+        drawEmptyGrid(size, fillerGrid)
+        drawGrid(fillerGrid, size)
+        solve=False
+        if size=='':
+            triche=False
+
+    if grilleEnCours==True:
+        if (Ruleset.emptyNum(fillerGrid)==False) & (triche==False):
+            SolvedGrid=copy.deepcopy(grid)
+            solveGrid.solveGrid(SolvedGrid)
+            if (SolvedGrid==fillerGrid):
+                victory=True
+            else:
+                lose=True
+        else:
+            victory=False
+            lose=False
 
     #zone de saisie numéro 1
     if active: 
@@ -291,6 +340,11 @@ while running:
 
     #test image
     screen.blit(small_img,(740,10))
+    screen.blit(solve_small,(780, -8))
+    if lose==True:
+        screen.blit(death, (-450,-150))
+    if victory==True:
+        screen.blit(Victory_resize, (-100, 0))
     
     #boutons de difficulté
     pygame.draw.rect(screen, (57,211,126),ez_diff)
@@ -298,6 +352,18 @@ while running:
     pygame.draw.rect(screen, (252,176,35),hard_diff)
     pygame.draw.rect(screen, (198,36,3),hardplus_diff)
     pygame.draw.rect(screen, (0,0,1),demon_diff)
+
+    #esthétique bouton difficulté
+    if Diff==1:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(740, 150, 25, 25), 3)
+    elif Diff==2:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(770, 150, 25, 25), 3)
+    elif Diff==3:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(800, 150, 25, 25), 3)
+    elif Diff==4:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(830, 150, 25, 25), 3)
+    elif Diff==5:
+        pygame.draw.rect(screen, (255,255,255), pygame.Rect(860, 150, 25, 25), 3)
 
     # flip() the display to put your work on screen
     pygame.display.flip()
