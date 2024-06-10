@@ -182,7 +182,6 @@ while running:
                     print("pas de grille en cours")
             
             if save2_hitobx.collidepoint(event.pos):
-                print("hit")
                 solve=True
                 triche=True
 
@@ -263,9 +262,13 @@ while running:
         if generate==False:
             if size==5 or size==6:
                 grid = FillGrid.generateGrid2(size)
+                removeNum.removeNum(grid, Diff, True)
             else:
                 grid = FillGrid.generateGrid(size)
-            removeNum.removeNum(grid, Diff)
+                if size==4:
+                    removeNum.removeNum(grid, Diff, True)
+                else:
+                    removeNum.removeNum(grid, Diff)
             generate = True
             fillerGrid = copy.deepcopy(grid)
         drawEmptyGrid(size, grid)
