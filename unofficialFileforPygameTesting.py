@@ -269,8 +269,8 @@ while running:
 
     #Résoud la grille si demandé
     if solve==True: 
-        solveGrid(grid)
-        drawGrid(grid)
+        solveGrid.solveGrid(grid)
+        drawGrid(grid, size)
         solve==False
 
     if grilleEnCours==True:

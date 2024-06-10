@@ -66,7 +66,7 @@ def getGrids(lines):
 
     
 
-def testExistence(filename):
+def testExistence(userpath, filename):
     filepath=userpath+filename+".json"
     print(filepath)
     test=os.path.exists(filepath)
