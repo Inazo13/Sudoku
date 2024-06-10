@@ -20,6 +20,7 @@ grilleEnCours=False
 generate = False
 defaultDiff=1
 Diff=0
+triche=False
 
 #Si utilisateur souhaite résoudre la grille
 solve=False
@@ -39,7 +40,7 @@ save_hitobx = pygame.Rect(740, 10, 25, 25)
 #affichage du bouton solve
 buttonSolve=pygame.image.load("solve.png")
 solve_small = pygame.transform.scale(buttonSolve, (70, 70))
-save2_hitobx = pygame.Rect(770, 5, 30, 70) 
+save2_hitobx = pygame.Rect(770, 5, 75, 40) 
 
 #victoire/défaite
 death=pygame.image.load("YOU_DIED.png")
@@ -181,7 +182,9 @@ while running:
                     print("pas de grille en cours")
             
             if save2_hitobx.collidepoint(event.pos):
+                print("hit")
                 solve=True
+                triche=True
 
             if ez_diff.collidepoint(event.pos):
                 Diff=1
@@ -269,12 +272,16 @@ while running:
 
     #Résoud la grille si demandé
     if solve==True: 
+        fillerGrid=grid
         solveGrid.solveGrid(grid)
-        drawGrid(grid, size)
-        solve==False
+        drawEmptyGrid(size, fillerGrid)
+        drawGrid(fillerGrid, size)
+        solve=False
+        if size=='':
+            triche=False
 
     if grilleEnCours==True:
-        if Ruleset.emptyNum(fillerGrid)==False:
+        if (Ruleset.emptyNum(fillerGrid)==False) & (triche==False):
             SolvedGrid=copy.deepcopy(grid)
             solveGrid.solveGrid(SolvedGrid)
             if (SolvedGrid==fillerGrid):
@@ -361,4 +368,3 @@ while running:
     clock.tick(60)
 
 pygame.quit()
-
