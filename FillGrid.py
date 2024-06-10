@@ -23,14 +23,30 @@ def fillGrid(grid, possPool):
     grid[line][column]='.'
     return False
 
+def fillCell(grid, pool, cell, size):
+    for line in range((cell//size)*size, ((cell//size)+1)*size):
+        for column in range((cell%size)*size, ((cell%size)+1)*size):
+            grid[line][column]=pool.pop(0)
+
 def generateGrid(size):
     grid=generateEmptyGrid(size)
     possPool = limitPool(grid)
     fillGrid(grid, possPool)
     return grid
 
+def generateGrid2(size):
+    grid=generateEmptyGrid(size)
+    pool = limitPool(grid)
+    random.shuffle(pool)
+    for cell in range(size*size):
+        fillCell(grid, copy.deepcopy(pool), cell, size)
+        pool = pool[size:]+pool[:size]
+        if (cell+1)%5==0:
+            pool = pool[size+1:]+pool[:size+1]
+    return grid
+
 if __name__ == "__main__":
-    grid = generateGrid()
+    grid = generateGrid2(5)
     for line in grid:
         print(line)
 

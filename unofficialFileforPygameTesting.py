@@ -177,7 +177,7 @@ while running:
             
             if save_hitobx.collidepoint(event.pos):
                 if ((fileManager.userpath!='\.')&(grilleEnCours==True)):
-                    fileManager.saveGrid(grid, fillerGrid, fileManager.userpath)
+                    fileManager.saveGrid(grid, fillerGrid)
                 else:
                     print("pas de grille en cours")
             
@@ -261,7 +261,10 @@ while running:
         if Diff==0:
             Diff=defaultDiff
         if generate==False:
-            grid = FillGrid.generateGrid(size)
+            if size==5 or size==6:
+                grid = FillGrid.generateGrid2(size)
+            else:
+                grid = FillGrid.generateGrid(size)
             removeNum.removeNum(grid, Diff)
             generate = True
             fillerGrid = copy.deepcopy(grid)
