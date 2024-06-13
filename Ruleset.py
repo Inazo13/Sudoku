@@ -7,13 +7,16 @@ import math
 #x est le nombre que on souhaite placer dans la case
 
 def limitPool(grid):
-    pool=["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0"]
+    """ Création d'un tableau comprenant la liste des valeurs possibles dans la grille grid"""
+    pool=["1","2","3","4","5","6","7","8","9","a","b","c","d","e","f","g","h","i",
+          "j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","0"]
     possPool=[]
     for loop in range (len(grid)):
         possPool+=[(pool[loop])]
     return possPool
 
 def emptyNum(grid):
+    """Renvoie un booléen sur la présence où non de cases vides"""
     for i in range(0, len(grid)):
         for j in range(0, len(grid)):
             if grid[i][j]=='.':
@@ -21,6 +24,7 @@ def emptyNum(grid):
     return False
 
 def searchLine (grid, line, num):
+    """Vérifie la présence d'une valeur num au sein de la ligne line"""
     hit=False
     for size in range(len(grid)): 
         if grid[line][size]==num:
@@ -28,6 +32,7 @@ def searchLine (grid, line, num):
     return hit
 
 def searchColumn (grid, column, num):
+    """Vérifie la présence d'une valeur num au sein de la colonne column"""
     hit=False
     for size in range(len(grid)): 
         if grid[size][column]==num:
@@ -35,9 +40,11 @@ def searchColumn (grid, column, num):
     return hit
 
 def searchCell(grid, line, column, num):
+    """Vérifie la présence d'une valeur num au sein de la celulle dont font parti
+    la ligne line et la colonne column"""
     hit=False
-    i=int(line-(line%math.sqrt(len(grid))))
-    j=int(column-(column%math.sqrt(len(grid))))
+    i=int(line-(line%math.sqrt(len(grid)))) #Determine la première ligne de la cellule
+    j=int(column-(column%math.sqrt(len(grid)))) #Determine la première colonne de la cellule
     for loop1 in range (i, int(i+math.sqrt(len(grid)))):
         for loop2 in range (j, int(j+math.sqrt(len(grid)))):
                 if grid[loop1][loop2]==num:
@@ -45,6 +52,8 @@ def searchCell(grid, line, column, num):
     return hit
 
 def valid(grid, line, column, num):
+    """Vérifie si une valeur num peut se placer à l'endroit déterminer par la ligne line
+    et la colonne column"""
     hitLigne = searchLine(grid, line, num)
     hitColonne = searchColumn(grid, column, num)
     hitCell = searchCell(grid, line, column, num)

@@ -5,16 +5,22 @@ import copy
 import math
 
 def fillGrid(grid, possPool):
+    """Rempli la grille de Sudoku de manière récursive à l'aide d'un tableau
+    des valeurs possibles mélangés aléatoirement.
+    Renvoie des booléens afin de sortir de la récursivité.
+    """
     for i in range(len(grid)*len(grid)):
         line = i//len(grid)
         column = i%len(grid)
         if grid[line][column]=='.':
+            #création d'une copie du tab des valeurs possibles
             copyPool = copy.deepcopy(possPool)
+            #mélange du tableau
             random.shuffle(copyPool)
             for num in copyPool:
-                if valid(grid, line, column, num):
+                if valid(grid, line, column, num): #vérifie la validité de la valeur num
                     grid[line][column]=num
-                    if not emptyNum(grid):
+                    if not emptyNum(grid): #vérifie si la grille est pleine
                         return True
                     else:
                         if fillGrid(grid, possPool):
@@ -23,32 +29,42 @@ def fillGrid(grid, possPool):
     grid[line][column]='.'
     return False
 
-def fillCell(grid, pool, cell, size):
-    for line in range((cell//size)*size, ((cell//size)+1)*size):
-        for column in range((cell%size)*size, ((cell%size)+1)*size):
-            grid[line][column]=pool.pop(0)
-
 def generateGrid(size):
+    """Fonction qui va générer une grille vide puis qui va la remplir"""
     grid=generateEmptyGrid(size)
     possPool = limitPool(grid)
     fillGrid(grid, possPool)
     return grid
 
+def fillCell(grid, pool, cell, size):
+    """Fonction qui va remplir une cellule à l'aide d'un tableau de caractères aléatoires"""
+    for line in range((cell//size)*size, ((cell//size)+1)*size):
+        for column in range((cell%size)*size, ((cell%size)+1)*size):
+            grid[line][column]=pool.pop(0)
+
 def generateGrid2(size):
+    """Fonction qui génère une grille vide puis la remplie à l'aide d'un tableau
+    de caractères aléatoires qui sera arangé pour que la grille soit valide"""
     grid=generateEmptyGrid(size)
     pool = limitPool(grid)
     random.shuffle(pool)
     for cell in range(size*size):
         fillCell(grid, copy.deepcopy(pool), cell, size)
-        pool = pool[size:]+pool[:size]
+        #On décale les valeurs d'une ligne sur la cellule
+        pool = pool[size:]+pool[:size] 
         if (cell+1)%5==0:
+            # On décale les valeurs d'une ligne + 1 quand on commence une nouvelle ligne de celulles 
             pool = pool[size+1:]+pool[:size+1]
     return grid
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     grid = generateGrid2(5)
     for line in grid:
         print(line)
+"""
+
+
+# Anciens codes
 
 """def findPossNum(possPool, grid, indCell, i):
     possNum = []

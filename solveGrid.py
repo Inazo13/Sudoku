@@ -4,14 +4,17 @@ import random
 import copy
 
 def solve(grid, possPool):
+    """Rempli la grille de Sudoku de manière récursive en regardant les valeurs 1 à 1
+    Renvoie des booléens afin de sortir de la récursivité
+    """
     for i in range(len(grid)*len(grid)):
-        line = i//len(grid)
-        column = i%len(grid)
+        line = i//len(grid) #Determine la ligne en fonction du numéro de la case
+        column = i%len(grid) #Determine la colonne en fonction du numéro de la case
         if grid[line][column]=='.':
             for num in possPool:
-                if valid(grid, line, column, num):
+                if valid(grid, line, column, num): #vérifie la validité de la valeur num
                     grid[line][column]=num
-                    if not emptyNum(grid):
+                    if not emptyNum(grid): #vérifie si la grille est pleine
                         return True
                     else:
                         if solve(grid, possPool):
@@ -21,10 +24,13 @@ def solve(grid, possPool):
     return False
 
 def solveGrid(grid):
+    """Fonction qui appelle la fonction principale mais en créant elle même
+    le tableau possPool, tableau des valeurs possibles de la grille"""
     possPool = limitPool(grid)
     solve(grid, possPool)
     
 
+"""
 if __name__ == "__main__":
     grid = [['.', 'b', '.', '6', 'd', 'c', '.', '.', '4', '.', '9', '.', 'f', '.', '.', '.'],
 ['a', '.', '3', '.', '.', 'b', '.', '.', 'd', '8', '2', 'c', '1', '9', '4', '.'],
@@ -43,8 +49,6 @@ if __name__ == "__main__":
 ['6', '.', '.', '.', '1', '.', '.', '7', 'b', '5', '.', '4', 'd', '.', '.', '.'],
 ['e', 'd', '.', '.', '.', '.', '.', '4', '.', '.', '6', 'f', '.', '8', '9', '.']]
 
-
-    
-
     for line in grid:
         print(line)
+"""
