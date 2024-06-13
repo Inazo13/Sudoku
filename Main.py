@@ -8,7 +8,7 @@ import removeNum
 import solveGrid
 # pygame setup
 pygame.init()
-pygame.mixer.music.load("acoustic_music.mp3")
+pygame.mixer.music.load("Media/acoustic_music.mp3")
 pygame.mixer.music.play(-1)
 screen = pygame.display.set_mode((1000, 800))
 clock = pygame.time.Clock()
@@ -33,18 +33,18 @@ pygame.font.init()
 text_font = pygame.font.SysFont('microsofthimalaya', 40)
 
 #test image affichage
-img=pygame.image.load('save.png')
+img=pygame.image.load('Media/save.png')
 small_img = pygame.transform.scale(img, (30, 30))
 save_hitobx = pygame.Rect(740, 10, 25, 25) 
 
 #affichage du bouton solve
-buttonSolve=pygame.image.load("solve.png")
+buttonSolve=pygame.image.load("Media/solve.png")
 solve_small = pygame.transform.scale(buttonSolve, (70, 70))
 save2_hitobx = pygame.Rect(770, 5, 75, 40) 
 
 #victoire/défaite
-death=pygame.image.load("YOU_DIED.png")
-Victory=pygame.image.load("VICTORY_ACHIEVED.png")
+death=pygame.image.load("Media/YOU_DIED.png")
+Victory=pygame.image.load("Media/VICTORY_ACHIEVED.png")
 Victory_resize=pygame.transform.scale(Victory, (1280, 720))
 
 
